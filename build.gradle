@@ -1,3 +1,9 @@
+buildscript {
+	dependencies {
+		classpath "gradle.plugin.com.palantir.gradle.docker:gradle-docker:0.22.1"
+	}
+}
+
 plugins {
 	id 'org.springframework.boot' version '2.1.6.RELEASE'
 	id 'java'
@@ -5,7 +11,7 @@ plugins {
 
 apply plugin: 'io.spring.dependency-management'
 
-group = 'com.biellcon.demos'
+group = 'reactive'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
@@ -28,4 +34,19 @@ dependencies {
 	compileOnly('org.projectlombok:lombok')
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+apply plugin: "com.palantir.docker"
+
+
+task unpack(type: Copy) {
+	dependsOn bootJar
+	from(zipTree(tasks.bootJar.outputs.files.singleFile))
+	into("build/dependency")
+}
+
+docker {
+	name "${project.group}/${bootJar.baseName}"
+	copySpec.from(tasks.unpack.outputs).into("dependency")
+	buildArgs(['DEPENDENCY': "dependency"])
 }

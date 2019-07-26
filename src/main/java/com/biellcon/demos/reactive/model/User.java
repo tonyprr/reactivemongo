@@ -2,6 +2,7 @@ package com.biellcon.demos.reactive.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.Email;
@@ -21,11 +22,15 @@ public class User {
     @NotBlank
     private String firstName;
 
+    @NotBlank
     private String lastName;
 
     @Email
     @NotEmpty
     @NotBlank
     private String email;
+
+    @DBRef(db = "businessArea")
+    private BusinessArea businessArea;
 
 }
